@@ -1,0 +1,20 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "description": "Node.js Course",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Necrobone/nodejs.git"
+  },
+  "author": "Necrobone",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Necrobone/nodejs/issues"
+  },
+  "homepage": "https://github.com/Necrobone/nodejs#readme"
+}
