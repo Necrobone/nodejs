@@ -1,14 +1,14 @@
 const express = require('express');
 const app = express();
 
-app.use((request, response, next) => {
-    console.log('In the middleware!');
-    next();
+app.use('/users', (request, response, next) => {
+    console.log('/users middleware');
+    request.send('<p>The Middleware that handles just /users</p>');
 });
 
-app.use((request, response, next) => {
-    console.log('In another middleware!');
-    response.send('<h1>Hello from Express!</h1>');
+app.use('/', (request, response, next) => {
+    console.log('/ middleware');
+    request.send('<p>The Middleware that handles just /</p>');
 });
 
 app.listen(3000);
