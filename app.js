@@ -7,4 +7,8 @@ const shopRoutes = require('./routes/shop');
 app.use(adminRoutes);
 app.use(shopRoutes);
 
+app.use((request, response, next) => {
+    response.status(404).send('<h1>Page not found</h1>');
+});
+
 app.listen(3000);
