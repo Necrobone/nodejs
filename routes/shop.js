@@ -6,6 +6,7 @@ const Router = express.Router();
 
 Router.get('/', (request, response) => {
     response.sendFile(path.join(rootDir, 'views', 'shop.html'));
+    response.render('shop');
 });
 
 module.exports = Router;

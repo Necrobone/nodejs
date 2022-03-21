@@ -3,7 +3,11 @@ const express = require('express');
 const rootDir = require('./utils/path');
 
 const app = express();
-const adminRoutes = require('./routes/admin');
+
+app.set('view engine', 'pug');
+app.set('views', './views');
+
+const adminExports = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 app.use(express.urlencoded({
@@ -12,10 +16,10 @@ app.use(express.urlencoded({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/admin', adminRoutes);
+app.use('/admin', adminExports.routes);
 app.use(shopRoutes);
 
-app.use((request, response, next) => {
+app.use((request, response) => {
     response.status(404).sendFile(path.join(rootDir, 'views', '404.html'));
 });
 
