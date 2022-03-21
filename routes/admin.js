@@ -8,7 +8,7 @@ Router.get('/add-product', (request, response) => {
     response.sendFile(path.join(rootDir, 'views', 'add-product.html'));
 });
 
-Router.post('/product', (request, response) => {
+Router.post('/add-product', (request, response) => {
     console.log(request.body);
     response.redirect('/');
 });
