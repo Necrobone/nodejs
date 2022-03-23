@@ -27,7 +27,7 @@ exports.getProducts = (request, response) => {
         response.render('admin/product-list', {
             products,
             title: 'Shop',
-            path: '/',
+            path: '/admin/products',
             hasProducts: products.length > 0,
             activeShop: true,
             productCSS: true
