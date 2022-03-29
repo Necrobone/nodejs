@@ -23,7 +23,7 @@ module.exports = class Cart {
             // If product exist in the cart
             if (existingProduct) {
                 // Product is the existing product, quantity +1
-                updatedProduct = { ...existingProduct };
+                updatedProduct = {...existingProduct};
                 updatedProduct.quantity = updatedProduct.quantity + 1;
 
                 // Replace the updated product in the cart
@@ -31,12 +31,37 @@ module.exports = class Cart {
                 cart.products[existingProductIndex] = updatedProduct;
             } else {
                 // If product does not exist in the cart, create it and add it to the cart
-                updatedProduct = { id: id, quantity: 1};
+                updatedProduct = {id: id, quantity: 1};
                 cart.products = [...cart.products, updatedProduct];
             }
 
             // Update total price of cart
             cart.totalPrice = cart.totalPrice + +productPrice;
+
+            // Save it to the database
+            fs.writeFile(database, JSON.stringify(cart), error => {
+                console.log(error);
+            })
+        });
+    }
+
+    static deleteProduct(id, price) {
+        // Fetch the previous cart
+        fs.readFile(database, (error, fileContent) => {
+            if (error) {
+                return;
+            }
+
+            // Read the cart
+            const cart = {...JSON.parse(fileContent)};
+
+            // Find the product
+            const product = cart.products.find(product => product.id === id);
+
+            // Remove the product from the cart
+            cart.products = cart.products.filter(product => product.id !== id);
+            // Reduce the total price by the amount of products removed
+            cart.totalPrice = cart.totalPrice - price * product.quantity;
 
             // Save it to the database
             fs.writeFile(database, JSON.stringify(cart), error => {
