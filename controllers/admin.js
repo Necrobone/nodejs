@@ -15,9 +15,11 @@ exports.postAddProduct = (request, response) => {
     const description = request.body.description;
 
     const product = new Product(null, title, imageUrl, price, description);
-    product.save();
-
-    response.redirect('/');
+    product.save()
+        .then(() => {
+            response.redirect('/');
+        })
+        .catch(error => console.log(error));
 };
 
 exports.getEditProduct = (request, response) => {
