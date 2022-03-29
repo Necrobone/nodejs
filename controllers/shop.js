@@ -28,13 +28,13 @@ exports.getProducts = (request, response) => {
 exports.getProduct = (request, response) => {
     const id = request.params.id;
 
-    Product.findById(id, product => {
+    Product.findById(id).then(([product]) => {
         response.render('shop/product-detail', {
-            product: product,
+            product: product[0],
             title: product.title,
             path: '/products'
         });
-    });
+    }).catch(error => console.log(error));
 };
 
 exports.getCart = (request, response) => {
