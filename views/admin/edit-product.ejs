@@ -1,7 +1,7 @@
 <%- include('../includes/head.ejs') %>
 <%- include('../includes/navigation.ejs') %>
 <main>
-    <form class="product-form" action="/admin/<% if (editing) { %>add<% } else { %>edit<% } %>-product" method="POST">
+    <form class="product-form" action="/admin/<% if (editing) { %>edit<% } else { %>add<% } %>-product" method="POST">
         <div class="form-control">
             <label for="title">Title</label>
             <input type="text" name="title" id="title" value="<% if (editing) { %><%=product.title%><% } %>">
@@ -18,6 +18,9 @@
             <label for="description">Description</label>
             <textarea name="description" id="description" rows="5"><% if (editing) { %><%=product.description%><% } %>"</textarea>
         </div>
+        <% if (editing) { %>
+            <input type="hidden" value="<%= product.id %>" name="id" />
+        <% } %>
         <button class="btn" type="submit"><% if (editing) { %>Update<% } else { %>Add<% } %> Product</button>
     </form>
 </main>
