@@ -52,7 +52,6 @@ module.exports = class Product {
                 if (!error) {
                     Cart.deleteProduct(id, product.price);
                 }
-                console.log(error);
             });
         });
     }

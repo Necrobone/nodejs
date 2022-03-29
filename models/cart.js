@@ -58,6 +58,11 @@ module.exports = class Cart {
             // Find the product
             const product = cart.products.find(product => product.id === id);
 
+            // Exit if product not on the cart
+            if (!product) {
+                return;
+            }
+
             // Remove the product from the cart
             cart.products = cart.products.filter(product => product.id !== id);
             // Reduce the total price by the amount of products removed

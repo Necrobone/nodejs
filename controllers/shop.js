@@ -74,3 +74,11 @@ exports.getOrders = (request, response) => {
         title: 'Your Orders'
     });
 };
+
+exports.postCartDeleteProduct = (request, response) => {
+    const id = request.body.id;
+    Product.findById(id, product => {
+       Cart.deleteProduct(id, product.price);
+       response.redirect('/cart');
+    });
+};
