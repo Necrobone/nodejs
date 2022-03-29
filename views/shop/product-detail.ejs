@@ -9,10 +9,8 @@
         </div>
         <h2><%= product.price %></h2>
         <p><%= product.description %></p>
-        <form action="/cart" method="post">
-            <button class="btn" type="submit">Add to Cart</button>
-        </form>
-    <% } else { %>
+        <%- include('../includes/add-to-cart.ejs') %>
+<% } else { %>
         <h1>No Product Found!</h1>
     <% } %>
 </main>

@@ -39,6 +39,10 @@ exports.getCart = (request, response) => {
     });
 };
 
+exports.postCart = (request, response) => {
+    const id = request.body.id;
+};
+
 exports.getCheckout = (req, res, next) => {
     res.render('shop/checkout', {
         path: '/checkout',
