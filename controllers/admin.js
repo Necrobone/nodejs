@@ -14,12 +14,13 @@ exports.postAddProduct = (request, response) => {
     const price = request.body.price;
     const description = request.body.description;
 
-    Product.create({
-        title: title,
-        price: price,
-        description: description,
-        imageUrl: imageUrl,
-    })
+    request.user
+        .createProduct({
+            title: title,
+            price: price,
+            description: description,
+            imageUrl: imageUrl
+        })
         .then(result => {
             console.log('Product Created!');
             response.redirect('/admin/products');
@@ -34,8 +35,10 @@ exports.getEditProduct = (request, response) => {
     }
 
     const id = request.params.id;
-    Product.findByPk(id)
-        .then(product => {
+    request.user
+        .getProducts({where: {id: id}})
+        .then(products => {
+            const product = products[0];
             if (!product) {
                 return response.redirect('/');
             }
@@ -87,7 +90,8 @@ exports.postDeleteProduct = (request, response) => {
 };
 
 exports.getProducts = (request, response) => {
-    Product.findAll()
+    request.user
+        .getProducts()
         .then(products => {
             response.render('admin/product-list', {
                 products,
