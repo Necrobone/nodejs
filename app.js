@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 
 const adminRoutes = require('./routes/admin');
-// const shopRoutes = require('./routes/shop');
+const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
 const Client = require('./utils/database').getClient;
 
@@ -28,7 +28,7 @@ app.use((request, response, next) => {
 });
 
 app.use('/admin', adminRoutes);
-// app.use(shopRoutes);
+app.use(shopRoutes);
 
 app.use(errorController.get404);
 
