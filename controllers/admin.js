@@ -14,13 +14,10 @@ exports.postAddProduct = (request, response) => {
     const price = request.body.price;
     const description = request.body.description;
 
-    request.user
-        .createProduct({
-            title: title,
-            price: price,
-            description: description,
-            imageUrl: imageUrl
-        })
+    const product = new Product(title, price, description, imageUrl);
+
+    product
+        .save()
         .then(result => {
             console.log('Product Created!');
             response.redirect('/admin/products');

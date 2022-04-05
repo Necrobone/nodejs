@@ -1,10 +1,10 @@
 const path = require('path');
 const express = require('express');
 
-// const adminRoutes = require('./routes/admin');
+const adminRoutes = require('./routes/admin');
 // const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
-const Database = require('./utils/database');
+const Client = require('./utils/database').getClient;
 
 const app = express();
 
@@ -24,13 +24,14 @@ app.use((request, response, next) => {
     //         next();
     //     })
     //     .catch(error => console.log(error));
+    next();
 });
 
-// app.use('/admin', adminRoutes);
+app.use('/admin', adminRoutes);
 // app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-Database((client) => {
+Client(() => {
     app.listen(3000);
 })
