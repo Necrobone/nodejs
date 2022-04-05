@@ -1,4 +1,3 @@
-const mongoDB = require('mongodb');
 const Product = require('../models/product');
 
 exports.getAddProduct = (request, response) => {
@@ -70,10 +69,7 @@ exports.postEditProduct = (request, response) => {
 exports.postDeleteProduct = (request, response) => {
     const id = request.body.id;
 
-    Product.findByPk(id)
-        .then(product => {
-            return product.destroy();
-        })
+    Product.deleteById(id)
         .then(result => {
             console.log('DELETED PRODUCT');
             response.redirect('/admin/products');
