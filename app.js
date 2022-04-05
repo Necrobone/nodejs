@@ -5,6 +5,7 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
 const Client = require('./utils/database').getClient;
+const User = require('./models/user');
 
 const app = express();
 
@@ -18,12 +19,12 @@ app.use(express.urlencoded({
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((request, response, next) => {
-    // User.findByPk(1)
-    //     .then(user => {
-    //         request.user = user;
-    //         next();
-    //     })
-    //     .catch(error => console.log(error));
+    User.findById('624c90ebb8eab35b4f5c70a4')
+        .then(user => {
+            request.user = user;
+            next();
+        })
+        .catch(error => console.log(error));
     next();
 });
 
