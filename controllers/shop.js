@@ -40,10 +40,7 @@ exports.getProduct = (request, response) => {
 
 exports.getCart = (request, response) => {
     request.user
-        .getCart()
-        .then(cart => {
-            return cart.getProducts();
-        })
+        .getCartProducts()
         .then(products => {
             response.render('shop/cart', {
                 path: '/cart',

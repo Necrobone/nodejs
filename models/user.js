@@ -44,6 +44,30 @@ class User {
             );
     }
 
+    getCartProducts() {
+        const Database = getDatabase();
+        const ids = [];
+        const quantities = {};
+
+        this.cart.products.forEach((product) => {
+            let id = product._id;
+
+            ids.push(id);
+            quantities[id] = product.quantity;
+        });
+
+        return Database
+            .collection('products')
+            .find({ _id: { $in: ids } })
+            .toArray()
+            .then((products) => {
+                return products.map((p) => {
+                    return { ...p, quantity: quantities[p._id] };
+                });
+            })
+            .catch(error => console.log(error));
+    }
+
     static findById(id) {
         const Database = getDatabase();
         return Database
