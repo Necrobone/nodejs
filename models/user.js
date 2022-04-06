@@ -1,13 +1,13 @@
 const mongoDB = require('mongodb');
-const { getDatabase } = require("../utils/database");
-const { ObjectId } = require("mongodb");
+const {getDatabase} = require("../utils/database");
+const {ObjectId} = require("mongodb");
 
 class User {
     constructor(name, email, cart, id) {
         this.name = name;
         this.email = email;
-        this.cart = cart;
-        this._id = id ? new mongoDB.ObjectId(id) : null;
+        this.cart = cart ? cart : {products: []};
+        this._id = id ? new ObjectId(id) : null;
     }
 
     save() {
@@ -21,19 +21,26 @@ class User {
     }
 
     addToCart(product) {
-        // const cartProduct = this.cart.items.findIndex(item => {
-        //     return item._id === product._id;
-        // });
+        const cartProducts = [...this.cart.products];
+        const cartProductIndex = cartProducts.findIndex(item => {
+            return item._id.toString() === product._id.toString();
+        });
 
-        const updatedCart = {
-            products: [{id: new ObjectId(product._id), quantity: 1}]
+        if (cartProductIndex >= 0) {
+            cartProducts[cartProductIndex].quantity++;
+        } else {
+            cartProducts.push({_id: new ObjectId(product._id), quantity: 1});
+        }
+
+        const cart = {
+            products: cartProducts
         };
 
         const Database = getDatabase();
         return Database.collection('users')
             .updateOne(
                 {_id: new ObjectId(this._id)},
-                {$set: {cart: updatedCart}}
+                {$set: {cart: cart}}
             );
     }
 

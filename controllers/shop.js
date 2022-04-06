@@ -63,40 +63,6 @@ exports.postCart = (request, response) => {
         })
         .then(result => {
             console.log(result);
-        })
-        .catch(error => console.log(error));
-
-
-
-    let fetchedCart;
-    let newQuantity = 1;
-    request.user
-        .getCart()
-        .then(cart => {
-            fetchedCart = cart;
-            return cart.getProducts({where: {id: id}})
-        })
-        .then(products => {
-            let product;
-            if (products.length > 0) {
-                product = products[0];
-            }
-            if (product) {
-                const oldQuantity = product.cartItem.quantity;
-                newQuantity = oldQuantity + 1;
-                return product;
-            }
-
-            return Product.findByPk(id);
-        })
-        .then(product => {
-            return fetchedCart.addProduct(product, {
-                through: {
-                    quantity: newQuantity,
-                }
-            });
-        })
-        .then(() => {
             response.redirect('/cart');
         })
         .catch(error => console.log(error));
