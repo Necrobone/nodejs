@@ -80,24 +80,7 @@ exports.getOrders = (request, response) => {
 exports.postOrders = (request, response) => {
     let fetchedCart;
     request.user
-        .getCart()
-        .then(cart => {
-            fetchedCart = cart;
-            return cart.getProducts();
-        })
-        .then(products => {
-            return request.user.createOrder()
-                .then(order => {
-                    return order.addProducts(products.map(product => {
-                        product.orderItem = { quantity: product.cartItem.quantity }
-                        return product;
-                    }));
-                })
-                .catch(error => console.log(error));
-        })
-        .then(() => {
-            return fetchedCart.setProducts(null);
-        })
+        .addOrder()
         .then(() => {
             response.redirect('/orders');
         })
