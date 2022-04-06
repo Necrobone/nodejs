@@ -57,6 +57,17 @@ exports.getCart = (request, response) => {
 
 exports.postCart = (request, response) => {
     const id = request.body.id;
+    Product.findById(id)
+        .then(product => {
+            return request.user.addToCart(product);
+        })
+        .then(result => {
+            console.log(result);
+        })
+        .catch(error => console.log(error));
+
+
+
     let fetchedCart;
     let newQuantity = 1;
     request.user
