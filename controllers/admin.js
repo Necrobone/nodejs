@@ -62,10 +62,15 @@ exports.postEditProduct = (request, response) => {
     const imageUrl = request.body.imageUrl;
     const price = request.body.price;
     const description = request.body.description;
-    const product = new Product(title, price, description, imageUrl, id);
 
-    product
-        .save()
+    Product.findById(id)
+        .then(product => {
+            product.title = title;
+            product.price = price;
+            product.description = description;
+            product.imageUrl = imageUrl;
+            return product.save();
+        })
         .then(result => {
             console.log('UPDATED PRODUCT');
             response.redirect('/admin/products');
@@ -86,7 +91,7 @@ exports.postDeleteProduct = (request, response) => {
 
 exports.getProducts = (request, response) => {
     Product
-        .fetchAll()
+        .find()
         .then(products => {
             response.render('admin/product-list', {
                 products,
