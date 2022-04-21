@@ -15,6 +15,7 @@ const User = new Schema({
         products: [{
             id: {
                 type: Schema.Types.ObjectId,
+                ref: 'Product',
                 required: true,
             },
             quantity: {

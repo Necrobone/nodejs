@@ -19,7 +19,8 @@ exports.postAddProduct = (request, response) => {
         title: title,
         price: price,
         description: description,
-        imageUrl: imageUrl
+        imageUrl: imageUrl,
+        user: request.user
     });
 
     product
