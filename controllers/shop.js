@@ -6,7 +6,8 @@ exports.getIndex = (request, response) => {
             response.render('shop/index', {
                 products: products,
                 title: 'Shop',
-                path: '/'
+                path: '/',
+                productCSS: true
             });
         })
         .catch(error => console.log(error));
@@ -18,7 +19,8 @@ exports.getProducts = (request, response) => {
             response.render('shop/product-list', {
                 products: products,
                 title: 'All Products',
-                path: '/products'
+                path: '/products',
+                productCSS: true
             });
         })
         .catch(error => console.log(error));
@@ -66,12 +68,13 @@ exports.postCart = (request, response) => {
 };
 
 exports.getOrders = (request, response) => {
-    request.user.getOrders({ include: ['products']})
+    request.user.getOrders()
         .then(orders => {
             response.render('shop/orders', {
                 path: '/orders',
                 title: 'Your Orders',
-                orders: orders
+                orders: orders,
+                ordersCSS: true,
             });
         })
         .catch(error => console.log(error));

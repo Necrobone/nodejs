@@ -6,14 +6,17 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title><%= title %></title>
         <link rel="stylesheet" href="/css/main.css">
-        <% if (() => formsCSS) { %>
+        <% if (typeof formsCSS !== 'undefined') { %>
             <link rel="stylesheet" href="/css/forms.css">
         <% } %>
-        <% if (() => productCSS) { %>
+        <% if (typeof productCSS !== 'undefined') { %>
             <link rel="stylesheet" href="/css/product.css">
         <% } %>
-        <% if (() => cartCSS) { %>
+        <% if (typeof cartCSS !== 'undefined') { %>
             <link rel="stylesheet" href="/css/cart.css">
+        <% } %>
+        <% if (typeof ordersCSS !== 'undefined') { %>
+            <link rel="stylesheet" href="/css/orders.css">
         <% } %>
     </head>
     <body>

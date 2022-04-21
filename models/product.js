@@ -1,4 +1,4 @@
-const mongoDB = require('mongodb');
+const {ObjectId} = require('mongodb');
 const { getDatabase } = require("../utils/database");
 
 class Product {
@@ -7,7 +7,7 @@ class Product {
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
-        this._id = id ? new mongoDB.ObjectId(id) : null;
+        this._id = id ? new ObjectId(id.toString()) : null;
         this.userId = userId;
     }
 
@@ -48,7 +48,7 @@ class Product {
         const Database = getDatabase();
         return Database
             .collection('products')
-            .findOne({_id: new mongoDB.ObjectId(id)})
+            .findOne({_id: new ObjectId(id.toString())})
             .then(product => {
                 console.log(product);
                 return product;
@@ -60,7 +60,7 @@ class Product {
         const Database = getDatabase();
         return Database
             .collection('products')
-            .deleteOne({_id: new mongoDB.ObjectId(id)})
+            .deleteOne({_id: new ObjectId(id.toString())})
             .then(result => {
                 console.log('Deleted product');
             })

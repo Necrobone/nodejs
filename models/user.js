@@ -1,4 +1,3 @@
-const mongoDB = require('mongodb');
 const {getDatabase} = require("../utils/database");
 const {ObjectId} = require("mongodb");
 
@@ -7,7 +6,7 @@ class User {
         this.name = name;
         this.email = email;
         this.cart = cart ? cart : {products: []};
-        this._id = id ? new ObjectId(id) : null;
+        this._id = id ? new ObjectId(id.toString()) : null;
     }
 
     save() {
@@ -29,7 +28,7 @@ class User {
         if (cartProductIndex >= 0) {
             cartProducts[cartProductIndex].quantity++;
         } else {
-            cartProducts.push({_id: new ObjectId(product._id), quantity: 1});
+            cartProducts.push({_id: new ObjectId(product._id.toString()), quantity: 1});
         }
 
         const cart = {
@@ -39,7 +38,7 @@ class User {
         const Database = getDatabase();
         return Database.collection('users')
             .updateOne(
-                {_id: new ObjectId(this._id)},
+                {_id: new ObjectId(this._id.toString())},
                 {$set: {cart: cart}}
             );
     }
@@ -58,11 +57,11 @@ class User {
 
         return Database
             .collection('products')
-            .find({ _id: { $in: ids } })
+            .find({_id: {$in: ids}})
             .toArray()
             .then((products) => {
                 return products.map((p) => {
-                    return { ...p, quantity: quantities[p._id] };
+                    return {...p, quantity: quantities[p._id]};
                 });
             })
             .catch(error => console.log(error));
@@ -78,31 +77,47 @@ class User {
 
         return Database.collection('users')
             .updateOne(
-                {_id: new ObjectId(this._id)},
+                {_id: new ObjectId(this._id.toString())},
                 {$set: {cart: removedCartProductList}}
             );
     }
 
     addOrder() {
         const Database = getDatabase();
-        return Database.collection('orders')
-            .insertOne(this.cart)
+        return this.getCartProducts()
+            .then(products => {
+                const order = {
+                    products: products,
+                    user: {
+                        _id: new ObjectId(this._id.toString()),
+                        name: this.name
+                    }
+                };
+                return Database.collection('orders').insertOne(order);
+            })
             .then(result => {
                 this.cart = {products: []}
                 return Database.collection('users')
                     .updateOne(
-                        {_id: new ObjectId(this._id)},
+                        {_id: new ObjectId(this._id.toString())},
                         {$set: {cart: this.cart}}
                     );
             })
             .catch(error => console.log(error));
     }
 
+    getOrders() {
+        const Database = getDatabase();
+        return Database.collection('orders')
+            .find({'user._id': new ObjectId(this._id.toString())})
+            .toArray();
+    }
+
     static findById(id) {
         const Database = getDatabase();
         return Database
             .collection('users')
-            .findOne({_id: new mongoDB.ObjectId(id)})
+            .findOne({_id: new ObjectId(id.toString())})
             .then(user => {
                 console.log(user);
                 return user;

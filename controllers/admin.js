@@ -5,6 +5,7 @@ exports.getAddProduct = (request, response) => {
         title: 'Add Product',
         path: '/admin/add-product',
         editing: false,
+        formsCSS: true,
     });
 };
 
@@ -44,6 +45,7 @@ exports.getEditProduct = (request, response) => {
                 path: '/admin/edit-product',
                 editing: editMode,
                 product: product,
+                formsCSS: true,
             });
         })
         .catch(error => console.log(error));
