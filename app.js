@@ -1,10 +1,10 @@
 const path = require('path');
 const express = require('express');
+const mongoose = require('mongoose');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
-const Client = require('./utils/database').getClient;
 const User = require('./models/user');
 
 const app = express();
@@ -32,6 +32,9 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-Client(() => {
-    app.listen(3000);
-})
+mongoose
+    .connect('mongodb+srv://root:wUkLd5QqMMX7vQgQ@shop.bcjtd.mongodb.net/shop?retryWrites=true&w=majority')
+    .then(result => {
+        app.listen(3000);
+    })
+    .catch(error => console.log(error));
