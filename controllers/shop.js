@@ -42,8 +42,10 @@ exports.getProduct = (request, response) => {
 
 exports.getCart = (request, response) => {
     request.user
-        .getCartProducts()
-        .then(products => {
+        .populate('cart.products.product')
+        .then(user => {
+            console.log(user.cart.products);
+            const products = user.cart.products;
             response.render('shop/cart', {
                 path: '/cart',
                 title: 'Your Cart',
