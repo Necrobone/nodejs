@@ -4,10 +4,11 @@ exports.getLogin = (request, response) => {
         path: '/login',
         formsCSS: true,
         authCSS: true,
-        isLoggedIn: true
+        isLoggedIn: request.session.isLoggedIn
     });
 };
 
 exports.postLogin = (request, response) => {
+    request.session.isLoggedIn = true;
     response.redirect('/');
 };

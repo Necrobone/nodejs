@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -18,6 +19,12 @@ app.use(express.urlencoded({
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+    secret: 'my secret',
+    resave: false,
+    saveUninitialized: false
+}));
 
 app.use((request, response, next) => {
     User.findById('6261b5893efc20672ee057e7')
