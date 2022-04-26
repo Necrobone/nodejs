@@ -44,7 +44,6 @@ exports.getCart = (request, response) => {
     request.user
         .populate('cart.products.product')
         .then(user => {
-            console.log(user.cart.products);
             const products = user.cart.products;
             response.render('shop/cart', {
                 path: '/cart',
@@ -95,7 +94,7 @@ exports.postOrders = (request, response) => {
 exports.postCartDeleteProduct = (request, response) => {
     let id = request.body.id;
     request.user
-        .deleteCartProduct(id)
-        .then(response.redirect('/cart'))
+        .removeFromCart(id)
+        .then(() => response.redirect('/cart'))
         .catch(error => console.log(error));
 };

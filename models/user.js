@@ -25,6 +25,14 @@ const User = new Schema({
     }
 });
 
+User.methods.removeFromCart = function(id) {
+    this.cart.products = this.cart.products.filter(product => {
+        return product.product.toString() !== id.toString();
+    });
+
+    return this.save();
+};
+
 User.methods.addToCart = function(product) {
     const cartProducts = [...this.cart.products];
     const cartProductIndex = cartProducts.findIndex(item => {
