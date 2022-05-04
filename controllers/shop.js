@@ -45,7 +45,7 @@ exports.getProduct = (request, response) => {
 };
 
 exports.getCart = (request, response) => {
-    request.session.user
+    request.user
         .populate('cart.products.id')
         .then(user => {
             const products = user.cart.products;
@@ -64,7 +64,7 @@ exports.postCart = (request, response) => {
     const id = request.body.id;
     Product.findById(id)
         .then(product => {
-            return request.session.user.addToCart(product);
+            return request.user.addToCart(product);
         })
         .then(result => {
             response.redirect('/cart');
@@ -73,7 +73,7 @@ exports.postCart = (request, response) => {
 };
 
 exports.getOrders = (request, response) => {
-    Order.find({"user.id": request.session.user._id})
+    Order.find({"user.id": request.user._id})
         .then(orders => {
             response.render('shop/orders', {
                 path: '/orders',
@@ -87,7 +87,7 @@ exports.getOrders = (request, response) => {
 };
 
 exports.postOrders = (request, response) => {
-    request.session.user
+    request.user
         .populate('cart.products.id')
         .then(user => {
             const products = user.cart.products.map(product => {
@@ -98,8 +98,8 @@ exports.postOrders = (request, response) => {
             });
             const order = new Order({
                 user: {
-                    id: request.session.user,
-                    name: request.session.user.name,
+                    id: request.user,
+                    name: request.user.name,
                 },
                 products: products
             });
@@ -107,7 +107,7 @@ exports.postOrders = (request, response) => {
             return order.save();
         })
         .then(result => {
-            return request.session.user.clearCart();
+            return request.user.clearCart();
         })
         .then(() => response.redirect('/orders'))
         .catch(error => console.log(error));
@@ -115,7 +115,7 @@ exports.postOrders = (request, response) => {
 
 exports.postCartDeleteProduct = (request, response) => {
     let id = request.body.id;
-    request.session.user
+    request.user
         .removeFromCart(id)
         .then(() => response.redirect('/cart'))
         .catch(error => console.log(error));

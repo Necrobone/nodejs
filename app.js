@@ -34,6 +34,20 @@ app.use(session({
     store: store,
 }));
 
+app.use((request, response, next) => {
+    if (!request.session.user) {
+        console.log('no session');
+        return next();
+    }
+
+    User.findById(request.session.user._id)
+        .then(user => {
+            request.user = user;
+            next();
+        })
+        .catch(error => console.log(error));
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
