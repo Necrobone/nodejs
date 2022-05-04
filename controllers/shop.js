@@ -8,7 +8,8 @@ exports.getIndex = (request, response) => {
                 products: products,
                 title: 'Shop',
                 path: '/',
-                productCSS: true
+                productCSS: true,
+                isLoggedIn: request.session.isLoggedIn,
             });
         })
         .catch(error => console.log(error));
@@ -21,7 +22,8 @@ exports.getProducts = (request, response) => {
                 products: products,
                 title: 'All Products',
                 path: '/products',
-                productCSS: true
+                productCSS: true,
+                isLoggedIn: request.session.isLoggedIn,
             });
         })
         .catch(error => console.log(error));
@@ -35,14 +37,15 @@ exports.getProduct = (request, response) => {
             response.render('shop/product-detail', {
                 product: product,
                 title: product.title,
-                path: '/products'
+                path: '/products',
+                isLoggedIn: request.session.isLoggedIn,
             });
         })
         .catch(error => console.log(error));
 };
 
 exports.getCart = (request, response) => {
-    request.user
+    request.session.user
         .populate('cart.products.id')
         .then(user => {
             const products = user.cart.products;
@@ -51,6 +54,7 @@ exports.getCart = (request, response) => {
                 title: 'Your Cart',
                 products: products,
                 cartCSS: true,
+                isLoggedIn: request.session.isLoggedIn,
             });
         })
         .catch(error => console.log(error));
@@ -60,7 +64,7 @@ exports.postCart = (request, response) => {
     const id = request.body.id;
     Product.findById(id)
         .then(product => {
-            return request.user.addToCart(product);
+            return request.session.user.addToCart(product);
         })
         .then(result => {
             response.redirect('/cart');
@@ -69,20 +73,21 @@ exports.postCart = (request, response) => {
 };
 
 exports.getOrders = (request, response) => {
-    Order.find({"user.id": request.user._id})
+    Order.find({"user.id": request.session.user._id})
         .then(orders => {
             response.render('shop/orders', {
                 path: '/orders',
                 title: 'Your Orders',
                 orders: orders,
                 ordersCSS: true,
+                isLoggedIn: request.session.isLoggedIn,
             });
         })
         .catch(error => console.log(error));
 };
 
 exports.postOrders = (request, response) => {
-    request.user
+    request.session.user
         .populate('cart.products.id')
         .then(user => {
             const products = user.cart.products.map(product => {
@@ -93,8 +98,8 @@ exports.postOrders = (request, response) => {
             });
             const order = new Order({
                 user: {
-                    id: request.user,
-                    name: request.user.name,
+                    id: request.session.user,
+                    name: request.session.user.name,
                 },
                 products: products
             });
@@ -102,7 +107,7 @@ exports.postOrders = (request, response) => {
             return order.save();
         })
         .then(result => {
-            return request.user.clearCart();
+            return request.session.user.clearCart();
         })
         .then(() => response.redirect('/orders'))
         .catch(error => console.log(error));
@@ -110,7 +115,7 @@ exports.postOrders = (request, response) => {
 
 exports.postCartDeleteProduct = (request, response) => {
     let id = request.body.id;
-    request.user
+    request.session.user
         .removeFromCart(id)
         .then(() => response.redirect('/cart'))
         .catch(error => console.log(error));

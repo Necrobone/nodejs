@@ -31,17 +31,8 @@ app.use(session({
     secret: 'my secret',
     resave: false,
     saveUninitialized: false,
-    store: store
+    store: store,
 }));
-
-app.use((request, response, next) => {
-    User.findById('6261b5893efc20672ee057e7')
-        .then(user => {
-            request.user = user;
-            next();
-        })
-        .catch(error => console.log(error));
-});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -63,8 +54,7 @@ mongoose
                 })
                 user.save();
             }
-        })
-
+        });
 
         app.listen(3000);
     })

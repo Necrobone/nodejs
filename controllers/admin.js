@@ -6,6 +6,7 @@ exports.getAddProduct = (request, response) => {
         path: '/admin/add-product',
         editing: false,
         formsCSS: true,
+        isLoggedIn: request.session.isLoggedIn,
     });
 };
 
@@ -20,7 +21,7 @@ exports.postAddProduct = (request, response) => {
         price: price,
         description: description,
         imageUrl: imageUrl,
-        user: request.user
+        user: request.session.user
     });
 
     product
@@ -52,6 +53,7 @@ exports.getEditProduct = (request, response) => {
                 editing: editMode,
                 product: product,
                 formsCSS: true,
+                isLoggedIn: request.session.isLoggedIn,
             });
         })
         .catch(error => console.log(error));
@@ -100,7 +102,8 @@ exports.getProducts = (request, response) => {
                 path: '/admin/products',
                 hasProducts: products.length > 0,
                 activeShop: true,
-                productCSS: true
+                productCSS: true,
+                isLoggedIn: request.session.isLoggedIn,
             });
         })
         .catch(error => console.log(error));
