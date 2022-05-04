@@ -5,8 +5,7 @@ exports.getAddProduct = (request, response) => {
         title: 'Add Product',
         path: '/admin/add-product',
         editing: false,
-        formsCSS: true,
-        isLoggedIn: request.session.isLoggedIn,
+        formsCSS: true
     });
 };
 
@@ -52,8 +51,7 @@ exports.getEditProduct = (request, response) => {
                 path: '/admin/edit-product',
                 editing: editMode,
                 product: product,
-                formsCSS: true,
-                isLoggedIn: request.session.isLoggedIn,
+                formsCSS: true
             });
         })
         .catch(error => console.log(error));
@@ -102,8 +100,7 @@ exports.getProducts = (request, response) => {
                 path: '/admin/products',
                 hasProducts: products.length > 0,
                 activeShop: true,
-                productCSS: true,
-                isLoggedIn: request.session.isLoggedIn,
+                productCSS: true
             });
         })
         .catch(error => console.log(error));

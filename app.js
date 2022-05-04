@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -17,6 +18,7 @@ const store = new MongoDBStore({
     uri: MONGODB_URI,
     collection: 'sessions',
 });
+const csrfProtection = csrf({});
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -34,6 +36,8 @@ app.use(session({
     store: store,
 }));
 
+app.use(csrfProtection);
+
 app.use((request, response, next) => {
     if (!request.session.user) {
         console.log('no session');
@@ -46,6 +50,12 @@ app.use((request, response, next) => {
             next();
         })
         .catch(error => console.log(error));
+});
+
+app.use((request, response, next) => {
+    response.locals.isLoggedIn = request.session.isLoggedIn;
+    response.locals.csrfToken = request.csrfToken();
+    next();
 });
 
 app.use('/admin', adminRoutes);

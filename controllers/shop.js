@@ -9,7 +9,6 @@ exports.getIndex = (request, response) => {
                 title: 'Shop',
                 path: '/',
                 productCSS: true,
-                isLoggedIn: request.session.isLoggedIn,
             });
         })
         .catch(error => console.log(error));
@@ -22,8 +21,7 @@ exports.getProducts = (request, response) => {
                 products: products,
                 title: 'All Products',
                 path: '/products',
-                productCSS: true,
-                isLoggedIn: request.session.isLoggedIn,
+                productCSS: true
             });
         })
         .catch(error => console.log(error));
@@ -37,8 +35,7 @@ exports.getProduct = (request, response) => {
             response.render('shop/product-detail', {
                 product: product,
                 title: product.title,
-                path: '/products',
-                isLoggedIn: request.session.isLoggedIn,
+                path: '/products'
             });
         })
         .catch(error => console.log(error));
@@ -53,8 +50,7 @@ exports.getCart = (request, response) => {
                 path: '/cart',
                 title: 'Your Cart',
                 products: products,
-                cartCSS: true,
-                isLoggedIn: request.session.isLoggedIn,
+                cartCSS: true
             });
         })
         .catch(error => console.log(error));
@@ -79,8 +75,7 @@ exports.getOrders = (request, response) => {
                 path: '/orders',
                 title: 'Your Orders',
                 orders: orders,
-                ordersCSS: true,
-                isLoggedIn: request.session.isLoggedIn,
+                ordersCSS: true
             });
         })
         .catch(error => console.log(error));

@@ -6,8 +6,7 @@ exports.getLogin = (request, response) => {
         title: 'Login',
         path: '/login',
         formsCSS: true,
-        authCSS: true,
-        isLoggedIn: false
+        authCSS: true
     });
 };
 
@@ -16,8 +15,7 @@ exports.getSignup = (request, response) => {
         title: 'Signup',
         path: '/signup',
         formsCSS: true,
-        authCSS: true,
-        isLoggedIn: false
+        authCSS: true
     });
 };
 

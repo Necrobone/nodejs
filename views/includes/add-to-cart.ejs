@@ -1,6 +1,7 @@
 <% if (typeof isLoggedIn !== 'undefined' && isLoggedIn === true) { %>
     <form action="/cart" method="post">
         <input type="hidden" name="id" value="<%= product._id %>" />
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <button class="btn" type="submit">Add to Cart</button>
     </form>
 <% } %>
