@@ -22,14 +22,32 @@ exports.getSignup = (request, response) => {
 };
 
 exports.postLogin = (request, response) => {
-    User.findById('6261b5893efc20672ee057e7')
+    const email = request.body.email;
+    const password = request.body.password;
+
+
+    User.findOne({email: email})
         .then(user => {
-            request.session.isLoggedIn = true;
-            request.session.user = user;
-            request.session.save(error => {
-                console.log(error);
-                response.redirect('/');
-            })
+            if (!user) {
+                return response.redirect('/login');
+            }
+            BCrypt.compare(password, user.password)
+                .then(match => {
+                    if (match) {
+                        request.session.isLoggedIn = true;
+                        request.session.user = user;
+                        return request.session.save(error => {
+                            console.log(error);
+                            response.redirect('/');
+                        });
+                    }
+
+                    response.redirect('/login');
+                })
+                .catch(error => {
+                    console.log(error);
+                    response.redirect('/login');
+                });
         })
         .catch(error => console.log(error));
 };
