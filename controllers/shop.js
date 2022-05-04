@@ -99,7 +99,7 @@ exports.postOrders = (request, response) => {
             const order = new Order({
                 user: {
                     id: request.user,
-                    name: request.user.name,
+                    email: request.user.email,
                 },
                 products: products
             });
