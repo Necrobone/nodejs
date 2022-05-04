@@ -2,20 +2,36 @@ const User = require("../models/user");
 const BCrypt = require('bcryptjs');
 
 exports.getLogin = (request, response) => {
+    let error = request.flash('error');
+    if (error.length > 0) {
+       error = error[0];
+    } else {
+        error = null;
+    }
+
     response.render('auth/login', {
         title: 'Login',
         path: '/login',
         formsCSS: true,
-        authCSS: true
+        authCSS: true,
+        error: error
     });
 };
 
 exports.getSignup = (request, response) => {
+    let error = request.flash('error');
+    if (error.length > 0) {
+        error = error[0];
+    } else {
+        error = null;
+    }
+
     response.render('auth/signup', {
         title: 'Signup',
         path: '/signup',
         formsCSS: true,
-        authCSS: true
+        authCSS: true,
+        error: error
     });
 };
 
@@ -23,10 +39,10 @@ exports.postLogin = (request, response) => {
     const email = request.body.email;
     const password = request.body.password;
 
-
     User.findOne({email: email})
         .then(user => {
             if (!user) {
+                request.flash('error', 'Invalid email or password.');
                 return response.redirect('/login');
             }
             BCrypt.compare(password, user.password)
@@ -58,6 +74,7 @@ exports.postSignup = (request, response) => {
     User.findOne({email: email})
         .then(existingUser => {
             if (existingUser) {
+                request.flash('error', 'E-mail exists already, please use a different one.');
                 return response.redirect('/signup');
             }
 
