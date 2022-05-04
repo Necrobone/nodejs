@@ -6,7 +6,17 @@ exports.getLogin = (request, response) => {
         path: '/login',
         formsCSS: true,
         authCSS: true,
-        isLoggedIn: request.session.isLoggedIn
+        isLoggedIn: false
+    });
+};
+
+exports.getSignup = (request, response) => {
+    response.render('auth/signup', {
+        title: 'Signup',
+        path: '/signup',
+        formsCSS: true,
+        authCSS: true,
+        isLoggedIn: false
     });
 };
 
@@ -21,6 +31,9 @@ exports.postLogin = (request, response) => {
             })
         })
         .catch(error => console.log(error));
+};
+
+exports.postSignup = (request, response) => {
 };
 
 exports.postLogout = (request, response) => {
