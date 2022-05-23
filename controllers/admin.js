@@ -92,7 +92,7 @@ exports.postDeleteProduct = (request, response) => {
 
 exports.getProducts = (request, response) => {
     Product
-        .find()
+        .find({user: request.user._id})
         .then(products => {
             response.render('admin/product-list', {
                 products,
