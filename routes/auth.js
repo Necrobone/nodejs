@@ -8,5 +8,7 @@ Router.get('/signup', authController.getSignup);
 Router.post('/login', authController.postLogin);
 Router.post('/signup', authController.postSignup);
 Router.post('/logout', authController.postLogout);
+Router.get('/reset', authController.getReset);
+Router.post('/reset', authController.postReset);
 
 module.exports = Router;
