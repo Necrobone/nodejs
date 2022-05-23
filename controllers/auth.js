@@ -172,3 +172,26 @@ exports.postReset = (request, response) => {
             .catch(error => console.log(error));
     })
 };
+
+exports.getNewPassword = (request, response) => {
+    const token = request.params.token;
+    User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
+        .then(user => {
+            let error = request.flash('error');
+            if (error.length > 0) {
+                error = error[0];
+            } else {
+                error = null;
+            }
+
+            response.render('auth/new-password', {
+                title: 'New Password',
+                path: '/new-password',
+                formsCSS: true,
+                authCSS: true,
+                error: error,
+                userId: user._id.toString()
+            });
+        })
+        .catch(error => console.log(error));
+};
