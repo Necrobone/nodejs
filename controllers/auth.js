@@ -16,7 +16,7 @@ const transport = nodemailer.createTransport({
 exports.getLogin = (request, response) => {
     let error = request.flash('error');
     if (error.length > 0) {
-       error = error[0];
+        error = error[0];
     } else {
         error = null;
     }
@@ -190,8 +190,32 @@ exports.getNewPassword = (request, response) => {
                 formsCSS: true,
                 authCSS: true,
                 error: error,
-                userId: user._id.toString()
+                userId: user._id.toString(),
+                token: token
             });
+        })
+        .catch(error => console.log(error));
+};
+
+exports.postNewPassword = (request, response) => {
+    const newPassword = request.body.password;
+    const userId = request.body.userId;
+    const token = request.body.token;
+    let resetUser;
+
+    User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}, _id: userId})
+        .then(user => {
+            resetUser = user;
+            return BCrypt.hash(newPassword, 12);
+        })
+        .then(hashedPassword => {
+            resetUser.password = hashedPassword;
+            resetUser.resetToken = undefined;
+            resetUser.resetTokenExpiration = undefined;
+            return resetUser.save();
+        })
+        .then(result => {
+            response.redirect('/login');
         })
         .catch(error => console.log(error));
 };
