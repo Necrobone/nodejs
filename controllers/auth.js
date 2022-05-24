@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const User = require("../models/user");
 const BCrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
+const { validationResult } = require('express-validator/check')
 
 const transport = nodemailer.createTransport({
     host: "smtp.mailtrap.io",
@@ -82,6 +83,19 @@ exports.postSignup = (request, response) => {
     const email = request.body.email;
     const password = request.body.password;
     const confirmPassword = request.body.confirmPassword;
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+        return response
+            .status(422)
+            .render('auth/signup', {
+                title: 'Signup',
+                path: '/signup',
+                formsCSS: true,
+                authCSS: true,
+                error: errors.array()[0].msg
+            });
+    }
 
     User.findOne({email: email})
         .then(existingUser => {
