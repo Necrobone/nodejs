@@ -82,7 +82,6 @@ exports.postLogin = (request, response) => {
 exports.postSignup = (request, response) => {
     const email = request.body.email;
     const password = request.body.password;
-    const confirmPassword = request.body.confirmPassword;
     const errors = validationResult(request);
 
     if (!errors.isEmpty()) {
@@ -97,33 +96,24 @@ exports.postSignup = (request, response) => {
             });
     }
 
-    User.findOne({email: email})
-        .then(existingUser => {
-            if (existingUser) {
-                request.flash('error', 'E-mail exists already, please use a different one.');
-                return response.redirect('/signup');
-            }
+    return BCrypt.hash(password, 12)
+        .then(password => {
+            const user = new User({
+                email: email,
+                password: password,
+                cart: {items: []}
+            });
 
-            return BCrypt.hash(password, 12)
-                .then(password => {
-                    const user = new User({
-                        email: email,
-                        password: password,
-                        cart: {items: []}
-                    });
-
-                    return user.save();
-                })
-                .then(() => {
-                    response.redirect('/');
-                    return transport.sendMail({
-                        to: email,
-                        from: 'necrobone@hotmail.com',
-                        subject: 'Signup Succeeded!',
-                        html: '<h1>You successfully signed up!</h1>'
-                    });
-                })
-                .catch(error => console.log(error));
+            return user.save();
+        })
+        .then(() => {
+            response.redirect('/');
+            return transport.sendMail({
+                to: email,
+                from: 'necrobone@hotmail.com',
+                subject: 'Signup Succeeded!',
+                html: '<h1>You successfully signed up!</h1>'
+            });
         })
         .catch(error => console.log(error));
 };
