@@ -117,7 +117,8 @@ exports.postSignup = (request, response) => {
                 formsCSS: true,
                 authCSS: true,
                 error: errors.array()[0].msg,
-                oldInput: { email, password, confirmPassword }
+                oldInput: { email, password, confirmPassword },
+                validationErrors: errors.array()
             });
     }
 
