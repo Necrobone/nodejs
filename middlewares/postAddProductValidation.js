@@ -1,0 +1,21 @@
+const { body } = require('express-validator')
+
+const postAddProductValidation = () => {
+    return [
+        body('title', 'Please enter a valid title')
+            .isString()
+            .isLength({ min: 3 })
+            .trim(),
+        body('imageUrl', 'Please enter a valid image url')
+            .isURL(),
+        body('price', 'Please enter a valid price')
+            .isFloat(),
+        body('description', 'Please enter a valid description')
+            .isLength({ min: 5, max: 400 })
+            .trim(),
+    ];
+}
+
+module.exports = {
+    postAddProductValidation
+}

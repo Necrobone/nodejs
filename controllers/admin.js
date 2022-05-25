@@ -1,3 +1,4 @@
+const { validationResult } = require('express-validator');
 const Product = require('../models/product');
 
 exports.getAddProduct = (request, response) => {
@@ -5,6 +6,9 @@ exports.getAddProduct = (request, response) => {
         title: 'Add Product',
         path: '/admin/add-product',
         editing: false,
+        hasError: false,
+        error: null,
+        validationErrors: [],
         formsCSS: true
     });
 };
@@ -14,6 +18,27 @@ exports.postAddProduct = (request, response) => {
     const imageUrl = request.body.imageUrl;
     const price = request.body.price;
     const description = request.body.description;
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+        return response
+            .status(422)
+            .render('admin/edit-product', {
+                title: 'Add Product',
+                path: '/admin/edit-product',
+                editing: false,
+                hasError: true,
+                product: {
+                    title,
+                    imageUrl,
+                    price,
+                    description
+                },
+                error: errors.array()[0].msg,
+                validationErrors: errors.array(),
+                formsCSS: true
+            });
+    }
 
     const product = new Product({
         title: title,
@@ -51,6 +76,9 @@ exports.getEditProduct = (request, response) => {
                 path: '/admin/edit-product',
                 editing: editMode,
                 product: product,
+                hasError: false,
+                error: null,
+                validationErrors: [],
                 formsCSS: true
             });
         })
@@ -63,6 +91,28 @@ exports.postEditProduct = (request, response) => {
     const imageUrl = request.body.imageUrl;
     const price = request.body.price;
     const description = request.body.description;
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+        return response
+            .status(422)
+            .render('admin/edit-product', {
+                title: 'Edit Product',
+                path: '/admin/edit-product',
+                editing: true,
+                hasError: true,
+                product: {
+                    _id: id,
+                    title,
+                    imageUrl,
+                    price,
+                    description
+                },
+                error: errors.array()[0].msg,
+                validationErrors: errors.array(),
+                formsCSS: true
+            });
+    }
 
     Product.findById(id)
         .then(product => {
