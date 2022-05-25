@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const User = require("../models/user");
 const BCrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const { validationResult } = require('express-validator/check')
+const { validationResult } = require('express-validator')
 
 const transport = nodemailer.createTransport({
     host: "smtp.mailtrap.io",
@@ -51,6 +51,19 @@ exports.getSignup = (request, response) => {
 exports.postLogin = (request, response) => {
     const email = request.body.email;
     const password = request.body.password;
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+        return response
+            .status(422)
+            .render('auth/login', {
+                title: 'Login',
+                path: '/login',
+                formsCSS: true,
+                authCSS: true,
+                error: errors.array()[0].msg
+            });
+    }
 
     User.findOne({email: email})
         .then(user => {
@@ -96,24 +109,33 @@ exports.postSignup = (request, response) => {
             });
     }
 
-    return BCrypt.hash(password, 12)
-        .then(password => {
-            const user = new User({
-                email: email,
-                password: password,
-                cart: {items: []}
-            });
+    User.findOne({email: email})
+        .then(existingUser => {
+            if (existingUser) {
+                request.flash('error', 'E-mail exists already, please use a different one.');
+                return response.redirect('/signup');
+            }
 
-            return user.save();
-        })
-        .then(() => {
-            response.redirect('/');
-            return transport.sendMail({
-                to: email,
-                from: 'necrobone@hotmail.com',
-                subject: 'Signup Succeeded!',
-                html: '<h1>You successfully signed up!</h1>'
-            });
+            return BCrypt.hash(password, 12)
+                .then(password => {
+                    const user = new User({
+                        email: email,
+                        password: password,
+                        cart: {items: []}
+                    });
+
+                    return user.save();
+                })
+                .then(() => {
+                    response.redirect('/');
+                    return transport.sendMail({
+                        to: email,
+                        from: 'necrobone@hotmail.com',
+                        subject: 'Signup Succeeded!',
+                        html: '<h1>You successfully signed up!</h1>'
+                    });
+                })
+                .catch(error => console.log(error));
         })
         .catch(error => console.log(error));
 };
