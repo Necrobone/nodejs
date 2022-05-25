@@ -27,7 +27,11 @@ exports.getLogin = (request, response) => {
         path: '/login',
         formsCSS: true,
         authCSS: true,
-        error: error
+        error: error,
+        oldInput: {
+            email: "",
+            password: "",
+        }
     });
 };
 
@@ -44,7 +48,12 @@ exports.getSignup = (request, response) => {
         path: '/signup',
         formsCSS: true,
         authCSS: true,
-        error: error
+        error: error,
+        oldInput: {
+            email: "",
+            password: "",
+            confirmPassword: "",
+        }
     });
 };
 
@@ -61,7 +70,8 @@ exports.postLogin = (request, response) => {
                 path: '/login',
                 formsCSS: true,
                 authCSS: true,
-                error: errors.array()[0].msg
+                error: errors.array()[0].msg,
+                oldInput: { email, password }
             });
     }
 
@@ -95,6 +105,7 @@ exports.postLogin = (request, response) => {
 exports.postSignup = (request, response) => {
     const email = request.body.email;
     const password = request.body.password;
+    const confirmPassword = request.body.confirmPassword;
     const errors = validationResult(request);
 
     if (!errors.isEmpty()) {
@@ -105,7 +116,8 @@ exports.postSignup = (request, response) => {
                 path: '/signup',
                 formsCSS: true,
                 authCSS: true,
-                error: errors.array()[0].msg
+                error: errors.array()[0].msg,
+                oldInput: { email, password, confirmPassword }
             });
     }
 
