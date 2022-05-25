@@ -4,10 +4,12 @@ const User = require("../models/user");
 const postSignupValidation = () => {
     return [
         body('email', 'Please enter a valid email')
-            .isEmail(),
+            .isEmail()
+            .normalizeEmail(),
         body('password', 'Please enter a password with number, text and 5 characters')
             .isLength({min: 5})
-            .isAlphanumeric(),
+            .isAlphanumeric()
+            .trim(),
         body('confirmPassword')
             .custom((value, {req}) => {
                 if (value !== req.body.password) {
