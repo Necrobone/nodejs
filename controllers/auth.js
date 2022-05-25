@@ -31,7 +31,8 @@ exports.getLogin = (request, response) => {
         oldInput: {
             email: "",
             password: "",
-        }
+        },
+        validationErrors: []
     });
 };
 
@@ -53,7 +54,8 @@ exports.getSignup = (request, response) => {
             email: "",
             password: "",
             confirmPassword: "",
-        }
+        },
+        validationErrors: []
     });
 };
 
@@ -71,15 +73,25 @@ exports.postLogin = (request, response) => {
                 formsCSS: true,
                 authCSS: true,
                 error: errors.array()[0].msg,
-                oldInput: { email, password }
+                oldInput: { email, password },
+                validationErrors: errors.array()
             });
     }
 
     User.findOne({email: email})
         .then(user => {
             if (!user) {
-                request.flash('error', 'Invalid email or password.');
-                return response.redirect('/login');
+                return response
+                    .status(422)
+                    .render('auth/login', {
+                        title: 'Login',
+                        path: '/login',
+                        formsCSS: true,
+                        authCSS: true,
+                        error: 'Invalid email or password.',
+                        oldInput: { email, password },
+                        validationErrors: []
+                    });
             }
             BCrypt.compare(password, user.password)
                 .then(match => {
@@ -92,7 +104,17 @@ exports.postLogin = (request, response) => {
                         });
                     }
 
-                    response.redirect('/login');
+                    return response
+                        .status(422)
+                        .render('auth/login', {
+                            title: 'Login',
+                            path: '/login',
+                            formsCSS: true,
+                            authCSS: true,
+                            error: 'Invalid email or password.',
+                            oldInput: { email, password },
+                            validationErrors: []
+                        });
                 })
                 .catch(error => {
                     console.log(error);
