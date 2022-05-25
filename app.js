@@ -41,6 +41,12 @@ app.use(csrfProtection);
 app.use(flash());
 
 app.use((request, response, next) => {
+    response.locals.isLoggedIn = request.session.isLoggedIn;
+    response.locals.csrfToken = request.csrfToken();
+    next();
+});
+
+app.use((request, response, next) => {
     if (!request.session.user) {
         console.log('no session');
         return next();
@@ -48,23 +54,35 @@ app.use((request, response, next) => {
 
     User.findById(request.session.user._id)
         .then(user => {
+            if (!user) {
+                return next();
+            }
+
             request.user = user;
             next();
         })
-        .catch(error => console.log(error));
-});
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
 
-app.use((request, response, next) => {
-    response.locals.isLoggedIn = request.session.isLoggedIn;
-    response.locals.csrfToken = request.csrfToken();
-    next();
+            return next(customError);
+        });
 });
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+app.get('/500', errorController.get500);
+
 app.use(errorController.get404);
+
+app.use((error, request, response, next) => {
+    response.status(500).render('500', {
+        title: 'Error!',
+        path: '/500',
+    });
+});
 
 mongoose
     .connect(MONGODB_URI)

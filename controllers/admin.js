@@ -13,7 +13,7 @@ exports.getAddProduct = (request, response) => {
     });
 };
 
-exports.postAddProduct = (request, response) => {
+exports.postAddProduct = (request, response, next) => {
     const title = request.body.title;
     const imageUrl = request.body.imageUrl;
     const price = request.body.price;
@@ -25,7 +25,7 @@ exports.postAddProduct = (request, response) => {
             .status(422)
             .render('admin/edit-product', {
                 title: 'Add Product',
-                path: '/admin/edit-product',
+                path: '/admin/add-product',
                 editing: false,
                 hasError: true,
                 product: {
@@ -54,10 +54,15 @@ exports.postAddProduct = (request, response) => {
             console.log('CREATED PRODUCT');
             response.redirect('/admin/products');
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            const customError = new Error(error)
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
 };
 
-exports.getEditProduct = (request, response) => {
+exports.getEditProduct = (request, response, next) => {
     const editMode = request.query.edit;
     if (!editMode) {
         return response.redirect('/');
@@ -82,10 +87,15 @@ exports.getEditProduct = (request, response) => {
                 formsCSS: true
             });
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
 };
 
-exports.postEditProduct = (request, response) => {
+exports.postEditProduct = (request, response, next) => {
     const id = request.body.id;
     const title = request.body.title;
     const imageUrl = request.body.imageUrl;
@@ -127,12 +137,22 @@ exports.postEditProduct = (request, response) => {
                 .then(result => {
                     console.log('UPDATED PRODUCT');
                     response.redirect('/admin/products');
-                }).catch(error => console.log(error));
+                }).catch(error => {
+                    const customError = new Error(error);
+                    customError.httpStatusCode = 500;
+
+                    return next(customError);
+                });
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
 };
 
-exports.postDeleteProduct = (request, response) => {
+exports.postDeleteProduct = (request, response, next) => {
     const id = request.body.id;
 
     Product.deleteOne({id: id, user: request.user._id})
@@ -140,10 +160,15 @@ exports.postDeleteProduct = (request, response) => {
             console.log('DELETED PRODUCT');
             response.redirect('/admin/products');
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
 };
 
-exports.getProducts = (request, response) => {
+exports.getProducts = (request, response, next) => {
     Product
         .find({user: request.user._id})
         .then(products => {
@@ -156,5 +181,10 @@ exports.getProducts = (request, response) => {
                 productCSS: true
             });
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
 };

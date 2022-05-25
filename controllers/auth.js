@@ -59,7 +59,7 @@ exports.getSignup = (request, response) => {
     });
 };
 
-exports.postLogin = (request, response) => {
+exports.postLogin = (request, response, next) => {
     const email = request.body.email;
     const password = request.body.password;
     const errors = validationResult(request);
@@ -121,10 +121,15 @@ exports.postLogin = (request, response) => {
                     response.redirect('/login');
                 });
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
 };
 
-exports.postSignup = (request, response) => {
+exports.postSignup = (request, response, next) => {
     const email = request.body.email;
     const password = request.body.password;
     const confirmPassword = request.body.confirmPassword;
@@ -170,9 +175,19 @@ exports.postSignup = (request, response) => {
                         html: '<h1>You successfully signed up!</h1>'
                     });
                 })
-                .catch(error => console.log(error));
+                .catch(error => {
+                    const customError = new Error(error);
+                    customError.httpStatusCode = 500;
+
+                    return next(customError);
+                });
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
 };
 
 exports.postLogout = (request, response) => {
@@ -199,7 +214,7 @@ exports.getReset = (request, response) => {
     });
 };
 
-exports.postReset = (request, response) => {
+exports.postReset = (request, response, next) => {
     crypto.randomBytes(32, (error, buffer) => {
         if (error) {
             console.log(error);
@@ -230,11 +245,16 @@ exports.postReset = (request, response) => {
                     `
                 });
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                const customError = new Error(error);
+                customError.httpStatusCode = 500;
+
+                return next(customError);
+            });
     })
 };
 
-exports.getNewPassword = (request, response) => {
+exports.getNewPassword = (request, response, next) => {
     const token = request.params.token;
     User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
         .then(user => {
@@ -255,10 +275,15 @@ exports.getNewPassword = (request, response) => {
                 token: token
             });
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
 };
 
-exports.postNewPassword = (request, response) => {
+exports.postNewPassword = (request, response, next) => {
     const newPassword = request.body.password;
     const userId = request.body.userId;
     const token = request.body.token;
@@ -278,5 +303,10 @@ exports.postNewPassword = (request, response) => {
         .then(result => {
             response.redirect('/login');
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
 };
