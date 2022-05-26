@@ -6,8 +6,6 @@ const postEditProductValidation = () => {
             .isString()
             .isLength({ min: 3 })
             .trim(),
-        body('imageUrl', 'Please enter a valid image url')
-            .isURL(),
         body('price', 'Please enter a valid price')
             .isFloat(),
         body('description', 'Please enter a valid description')
