@@ -5,8 +5,14 @@ const PDFDocument = require('pdfkit');
 const Product = require('../models/product');
 const Order = require('../models/order');
 
+const ITEMS_PER_PAGE = 2;
+
 exports.getIndex = (request, response, next) => {
+    const page = request.query.page;
+
     Product.find()
+        .skip((page -1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE)
         .then(products => {
             response.render('shop/index', {
                 products: products,
