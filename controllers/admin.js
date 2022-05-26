@@ -15,7 +15,7 @@ exports.getAddProduct = (request, response) => {
 
 exports.postAddProduct = (request, response, next) => {
     const title = request.body.title;
-    const imageUrl = request.body.imageUrl;
+    const imageUrl = request.file;
     const price = request.body.price;
     const description = request.body.description;
     const errors = validationResult(request);
