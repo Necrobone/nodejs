@@ -42,13 +42,29 @@ exports.getIndex = (request, response, next) => {
 };
 
 exports.getProducts = (request, response, next) => {
+    const page = parseInt(request.query.page || 1);
+    let totalItems;
+
     Product.find()
+        .countDocuments()
+        .then(quantity => {
+            totalItems = quantity;
+            return Product.find()
+                .skip((page -1) * ITEMS_PER_PAGE)
+                .limit(ITEMS_PER_PAGE);
+        })
         .then(products => {
             response.render('shop/product-list', {
                 products: products,
                 title: 'All Products',
                 path: '/products',
-                productCSS: true
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                hasPreviousPage: page > 1,
+                nextPage: page + 1,
+                previousPage: page - 1,
+                lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+                productCSS: true,
             });
         })
         .catch(error => {
