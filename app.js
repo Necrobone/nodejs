@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
         callback(null, 'images')
     },
     filename: (request, file, callback) => {
-        callback(null, new Date().toISOString() + '-' + file.originalname);
+        callback(null, new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname);
     },
 });
 const fileFilter = (request, file, callback) => {
@@ -44,6 +44,7 @@ app.use(express.urlencoded({
 app.use(multer({storage, fileFilter}).single('image'));
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(session({
     secret: 'my secret',
@@ -93,6 +94,7 @@ app.get('/500', errorController.get500);
 app.use(errorController.get404);
 
 app.use((error, request, response, next) => {
+    console.log(error);
     response.status(500).render('500', {
         title: 'Error!',
         path: '/500',
