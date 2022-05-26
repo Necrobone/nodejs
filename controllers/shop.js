@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -155,3 +158,19 @@ exports.postCartDeleteProduct = (request, response, next) => {
             return next(customError);
         });
 };
+
+exports.getOrderInvoice = (request, response, next) => {
+    const id = request.params.id;
+    const invoiceName = 'invoice-' + id + '.pdf';
+    const invoicePath = path.join('assets', 'invoices', invoiceName);
+    fs.readFile(invoicePath, (error, data) => {
+       if(error) {
+           return next(error);
+       }
+
+       response.setHeader('Content-Type', 'application/pdf');
+       response.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+       response.send(data);
+    });
+
+}

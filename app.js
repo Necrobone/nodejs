@@ -23,7 +23,7 @@ const store = new MongoDBStore({
 const csrfProtection = csrf({});
 const storage = multer.diskStorage({
     destination: (request, file, callback) => {
-        callback(null, 'images')
+        callback(null, 'assets/images')
     },
     filename: (request, file, callback) => {
         callback(null, new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname);
@@ -44,7 +44,7 @@ app.use(express.urlencoded({
 app.use(multer({storage, fileFilter}).single('image'));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/assets/images', express.static(path.join(__dirname, 'assets/images')));
 
 app.use(session({
     secret: 'my secret',
