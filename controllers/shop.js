@@ -161,16 +161,28 @@ exports.postCartDeleteProduct = (request, response, next) => {
 
 exports.getOrderInvoice = (request, response, next) => {
     const id = request.params.id;
-    const invoiceName = 'invoice-' + id + '.pdf';
-    const invoicePath = path.join('assets', 'invoices', invoiceName);
-    fs.readFile(invoicePath, (error, data) => {
-       if(error) {
-           return next(error);
-       }
 
-       response.setHeader('Content-Type', 'application/pdf');
-       response.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
-       response.send(data);
-    });
+    Order.findById(id)
+        .then(order => {
+            if (!order) {
+                return next(new Error('No order found.'));
+            }
 
+            if (order.user.id.toString() !== request.user._id.toString()) {
+                return next(new Error('Unauthorized'));
+            }
+
+            const invoiceName = 'invoice-' + id + '.pdf';
+            const invoicePath = path.join('assets', 'invoices', invoiceName);
+            fs.readFile(invoicePath, (error, data) => {
+                if(error) {
+                    return next(error);
+                }
+
+                response.setHeader('Content-Type', 'application/pdf');
+                response.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+                response.send(data);
+            });
+        })
+        .catch(error => next(error));
 }
