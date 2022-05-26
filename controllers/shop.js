@@ -5,19 +5,31 @@ const PDFDocument = require('pdfkit');
 const Product = require('../models/product');
 const Order = require('../models/order');
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 1;
 
 exports.getIndex = (request, response, next) => {
-    const page = request.query.page;
+    const page = parseInt(request.query.page || 1);
+    let totalItems;
 
     Product.find()
-        .skip((page -1) * ITEMS_PER_PAGE)
-        .limit(ITEMS_PER_PAGE)
+        .countDocuments()
+        .then(quantity => {
+            totalItems = quantity;
+            return Product.find()
+                .skip((page -1) * ITEMS_PER_PAGE)
+                .limit(ITEMS_PER_PAGE);
+        })
         .then(products => {
             response.render('shop/index', {
                 products: products,
                 title: 'Shop',
                 path: '/',
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                hasPreviousPage: page > 1,
+                nextPage: page + 1,
+                previousPage: page - 1,
+                lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
                 productCSS: true,
             });
         })
