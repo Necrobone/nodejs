@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const PDFDocument = require('pdfkit');
 
 const Product = require('../models/product');
 const Order = require('../models/order');
@@ -175,11 +176,36 @@ exports.getOrderInvoice = (request, response, next) => {
             const invoiceName = 'invoice-' + id + '.pdf';
             const invoicePath = path.join('assets', 'invoices', invoiceName);
 
+            const pdf = new PDFDocument();
+            pdf.pipe(fs.createWriteStream(invoicePath));
+            pdf.pipe(response);
+
+            pdf.fontSize(26).text('Invoice ' + id, {
+                underline: true
+            });
+
+            pdf.text('---------------------------');
+
+            let totalPrice = 0;
+            order.products.forEach(orderProduct => {
+                totalPrice += orderProduct.quantity * orderProduct.product.price;
+                pdf.fontSize(14).text(
+                    orderProduct.product.title
+                    + ' - '
+                    + orderProduct.quantity
+                    + ' x '
+                    + '$'
+                    + orderProduct.product.price
+                );
+            });
+
+            pdf.text('---------');
+            pdf.fontSize(20).text('Total Price: $' + totalPrice);
+
+            pdf.end();
+
             response.setHeader('Content-Type', 'application/pdf');
             response.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
-
-            const file = fs.createReadStream(invoicePath);
-            file.pipe(response);
         })
         .catch(error => next(error));
 }
