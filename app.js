@@ -21,7 +21,7 @@ const store = new MongoDBStore({
     collection: 'sessions',
 });
 const csrfProtection = csrf({});
-const fileStorage = multer.diskStorage({
+const storage = multer.diskStorage({
     destination: (request, file, callback) => {
         callback(null, 'images')
     },
@@ -29,6 +29,10 @@ const fileStorage = multer.diskStorage({
         callback(null, new Date().toISOString() + '-' + file.originalname);
     },
 });
+const fileFilter = (request, file, callback) => {
+    const validMimeType = file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg';
+    callback(null, validMimeType);
+}
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -37,9 +41,7 @@ app.use(express.urlencoded({
     extended: false,
 }));
 
-app.use(multer({
-    storage: fileStorage,
-}).single('image'));
+app.use(multer({storage, fileFilter}).single('image'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
