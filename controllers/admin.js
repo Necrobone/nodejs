@@ -177,8 +177,9 @@ exports.postEditProduct = (request, response, next) => {
         });
 };
 
-exports.postDeleteProduct = (request, response, next) => {
-    const id = request.body.id;
+exports.deleteProduct = (request, response, next) => {
+    const id = request.params.id;
+    let imageUrl;
 
     Product.findById(id)
         .then(product => {
@@ -186,18 +187,23 @@ exports.postDeleteProduct = (request, response, next) => {
                 return next(new Error('Product not found'));
             }
 
-            fileHelper.deleteFile(product.imageUrl);
+            imageUrl = product.imageUrl;
+
             return Product.deleteOne({id: id, user: request.user._id});
         })
         .then(() => {
+            return fileHelper.deleteFile(imageUrl);
+        })
+        .then(() => {
             console.log('DELETED PRODUCT');
-            response.redirect('/admin/products');
+            response.status(200).json({
+                message: 'Success',
+            });
         })
         .catch(error => {
-            const customError = new Error(error);
-            customError.httpStatusCode = 500;
-
-            return next(customError);
+            response.status(500).json({
+                message: 'Deleting product failed'
+            });
         });
 };
 
