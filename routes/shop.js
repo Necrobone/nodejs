@@ -10,7 +10,9 @@ Router.get('/products/:id', shopController.getProduct);
 Router.get('/cart', isAuth, shopController.getCart);
 Router.post('/cart', isAuth, shopController.postCart);
 Router.get('/orders', isAuth, shopController.getOrders);
-Router.post('/create-order', isAuth, shopController.postOrders);
+Router.get('/checkout', isAuth, shopController.getCheckout);
+Router.get('/checkout/success', isAuth, shopController.getCheckoutSuccess);
+Router.get('/checkout/cancel', isAuth, shopController.getCheckout);
 Router.post('/cart-delete-item', isAuth, shopController.postCartDeleteProduct);
 Router.get('/orders/:id/invoice', isAuth, shopController.getOrderInvoice);
 

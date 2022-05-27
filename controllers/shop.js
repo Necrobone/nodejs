@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const PDFDocument = require('pdfkit');
+const stripe = require('stripe')('yourStripeId');
 
 const Product = require('../models/product');
 const Order = require('../models/order');
@@ -131,6 +132,51 @@ exports.postCart = (request, response, next) => {
         });
 };
 
+exports.getCheckout = (request, response, next) => {
+    let products;
+    let total = 0;
+    request.user
+        .populate('cart.products.id')
+        .then(user => {
+            products = user.cart.products;
+            total = 0;
+            products.forEach(product => {
+                total += product.quantity * product.id.price;
+            });
+
+            return stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                line_items: products.map(product => {
+                    return {
+                        name: product.id.title,
+                        description: product.id.description,
+                        amount: product.id.price * 100,
+                        currency: 'usd',
+                        quantity: product.quantity,
+                    }
+                }),
+                success_url: request.protocol + '://' + request.get('host') + '/checkout/success',
+                cancel_url: request.protocol + '://' + request.get('host') + '/checkout/cancel',
+            });
+        })
+        .then(session => {
+            response.render('shop/checkout', {
+                path: '/checkout',
+                title: 'Checkout',
+                products: products,
+                total,
+                session: session.id,
+                cartCSS: true
+            });
+        })
+        .catch(error => {
+            const customError = new Error(error);
+            customError.httpStatusCode = 500;
+
+            return next(customError);
+        });
+};
+
 exports.getOrders = (request, response, next) => {
     Order.find({"user.id": request.user._id})
         .then(orders => {
@@ -149,7 +195,7 @@ exports.getOrders = (request, response, next) => {
         });
 };
 
-exports.postOrders = (request, response, next) => {
+exports.getCheckoutSuccess = (request, response, next) => {
     request.user
         .populate('cart.products.id')
         .then(user => {
