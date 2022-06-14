@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Express.js Guide",
   "main": "app.js",
+  "engines": {
+    "node": "16.2.0"
+  },
   "scripts": {
     "start": "node app.js",
     "start-server": "node app.js",
