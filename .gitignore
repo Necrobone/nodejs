@@ -1,7 +1,6 @@
 /.idea/
 /nodejs.iml
 /node_modules/
-/assets/*
 /nodemon.json
 /server.cert
 /server.key
