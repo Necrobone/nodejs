@@ -13,11 +13,9 @@ const authRoutes = require('./routes/auth');
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
-const MONGODB_URI = 'mongodb+srv://root:wUkLd5QqMMX7vQgQ@shop.bcjtd.mongodb.net/shop';
-
 const app = express();
 const store = new MongoDBStore({
-    uri: MONGODB_URI,
+    uri: process.env.DATABASE,
     collection: 'sessions',
 });
 const csrfProtection = csrf({});
@@ -102,8 +100,8 @@ app.use((error, request, response, next) => {
 });
 
 mongoose
-    .connect(MONGODB_URI)
+    .connect(process.env.DATABASE)
     .then(result => {
-        app.listen(3000);
+        app.listen(process.env.PORT || 3000);
     })
     .catch(error => console.log(error));
