@@ -3,6 +3,5 @@
 /node_modules/
 /assets/*
 /nodemon.json
-/logs/
 /server.cert
 /server.key
