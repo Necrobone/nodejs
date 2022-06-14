@@ -6,6 +6,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
+const helmet = require('helmet');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -31,6 +32,8 @@ const fileFilter = (request, file, callback) => {
     const validMimeType = file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg';
     callback(null, validMimeType);
 }
+
+app.use(helmet());
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
