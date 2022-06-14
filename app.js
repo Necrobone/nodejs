@@ -1,5 +1,7 @@
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
+
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -23,6 +25,10 @@ const store = new MongoDBStore({
     collection: 'sessions',
 });
 const csrfProtection = csrf({});
+
+const privateKey = fs.readFileSync('server.key');
+const certificate = fs.readFileSync('server.cert');
+
 const storage = multer.diskStorage({
     destination: (request, file, callback) => {
         callback(null, 'assets/images')
@@ -38,12 +44,12 @@ const fileFilter = (request, file, callback) => {
 
 const accessLogStream = fs.createWriteStream(
     path.join(__dirname, 'logs', 'access.log'),
-    { flags: 'a' }
+    {flags: 'a'}
 );
 
 app.use(helmet());
 app.use(compression());
-app.use(morgan('combined', { stream: accessLogStream }));
+app.use(morgan('combined', {stream: accessLogStream}));
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -115,6 +121,6 @@ app.use((error, request, response, next) => {
 mongoose
     .connect(process.env.DATABASE)
     .then(result => {
-        app.listen(process.env.PORT || 3000);
+        https.createServer({key: privateKey, cert: certificate}, app).listen(process.env.PORT || 3000);
     })
     .catch(error => console.log(error));
