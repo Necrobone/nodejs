@@ -7,6 +7,7 @@ const csrf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
 const helmet = require('helmet');
+const compression = require('compression');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -34,6 +35,7 @@ const fileFilter = (request, file, callback) => {
 }
 
 app.use(helmet());
+app.use(compression());
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
